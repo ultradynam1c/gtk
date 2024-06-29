@@ -3,7 +3,7 @@
 
 pkgname=gtk
 pkgver=1.2.10
-pkgrel=18
+pkgrel=19
 pkgdesc="A multi-platform toolkit (v1)"
 arch=('i686' 'x86_64')
 url="http://www.gtk.org/"
@@ -21,11 +21,12 @@ prepare() {
   cp /usr/share/libtool/build-aux/config.sub .
   patch -p0 -i "${srcdir}/aclocal-fixes.patch"
   sed -i "/ac_cpp=/s/\$CPPFLAGS/\$CPPFLAGS -O2/" configure
+  sed -i -e "s|&name|(char \*\*)\&name|" gdk/gdkwindow.c
 }
 
 build() {
   cd gtk+-${pkgver}
-  CFLAGS="-Wno-format-security" ./configure --prefix=/usr --sysconfdir=/etc \
+  CFLAGS="-Wno-format-security -Wno-implicit-int -include stdio.h -include stdlib.h -include string.h" ./configure --prefix=/usr --sysconfdir=/etc \
     --mandir=/usr/share/man --infodir=/usr/share/info \
     --with-xinput=xfree
   make
